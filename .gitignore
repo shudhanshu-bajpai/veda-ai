@@ -1,7 +1,17 @@
 node_modules/
 dist/
 .next/
+build/
+out/
+
+# Env files (never commit secrets)
 .env
 .env.local
+.env.production
+.env.production.local
+
 *.log
 .DS_Store
+.vercel
+.turbo
+coverage/

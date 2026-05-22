@@ -125,20 +125,60 @@ npm run dev                # starts on :5000
 
 # frontend (separate terminal)
 cd frontend
+cp .env.example .env.local # default points at localhost:5000
 npm install
 npm run dev                # starts on :3000
 ```
 
 Both servers hot-reload. The frontend points at `http://localhost:5000/api` by default; override with `NEXT_PUBLIC_API_URL` in `frontend/.env.local` if you've moved the backend.
 
-Required env vars (backend):
+---
 
-```
-PORT=5000
-MONGODB_URI=mongodb+srv://...
-GEMINI_API_KEY=AIza...
-REDIS_URL=redis://localhost:6379   # optional
-```
+## Deployment
+
+The split is **frontend on Vercel, backend on Render** (or any Node host). Vercel's serverless model doesn't play well with WebSockets and BullMQ workers, so the backend stays on a long-running container. Both have generous free tiers.
+
+### 1. Backend → Render
+
+The repo includes `backend/render.yaml`, so the easiest path is:
+
+1. Push this repo to GitHub.
+2. On Render, **New → Blueprint** → point at the repo. It picks up `render.yaml` and creates the web service automatically.
+3. Set the env vars in the Render dashboard:
+
+   | Key | Example | Notes |
+   |-----|---------|-------|
+   | `MONGODB_URI` | `mongodb+srv://...` | MongoDB Atlas free tier |
+   | `GEMINI_API_KEY` | `AIzaSy...` | from [Google AI Studio](https://aistudio.google.com/app/apikey) |
+   | `FRONTEND_URL` | `https://your-app.vercel.app` | once you've deployed the frontend |
+   | `REDIS_URL` | _(leave blank)_ | falls back to in-memory if unset |
+
+4. Hit Deploy. The service will be reachable at `https://vedaai-backend-xxxx.onrender.com` — copy that URL.
+
+> Render's free tier spins down after 15 minutes of inactivity and takes ~30s to wake. For demos this is usually fine.
+
+### 2. Frontend → Vercel
+
+1. Push the repo to GitHub (same one is fine — Vercel will use `frontend/` as the project root).
+2. On Vercel, **New Project** → import the repo → set **Root Directory** to `frontend`. Framework detects as Next.js automatically.
+3. Add two env vars:
+
+   | Key | Value |
+   |-----|-------|
+   | `NEXT_PUBLIC_API_URL` | `https://<your-render-url>/api` |
+   | `NEXT_PUBLIC_WS_URL` | `wss://<your-render-url>/ws` |
+
+4. Deploy. You'll get a `https://your-app.vercel.app` URL.
+
+### 3. Wire the two together
+
+Go back to Render and set `FRONTEND_URL` to your Vercel URL so CORS lets through API requests. (The CORS allowlist also accepts any `*.vercel.app` subdomain, so preview URLs work too.)
+
+That's it. Test the flow on the live URL — empty state → create assignment → wait ~15s for Gemini → output page → download PDF.
+
+### Optional: managed Redis
+
+If you want the BullMQ queue working in production (faster on bursty traffic, retries), grab a free Redis from [Upstash](https://upstash.com) and set `REDIS_URL` on Render. The app detects it on boot and switches to queue mode.
 
 ---
 

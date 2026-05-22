@@ -14,9 +14,20 @@ import chatRoutes from "./routes/chat";
 const app = express();
 const server = http.createServer(app);
 
+// Allow:
+//  - the configured production frontend URL
+//  - localhost (any port) during dev
+//  - any Vercel preview / production deployment (*.vercel.app)
 app.use(
   cors({
-    origin: [config.frontendUrl, "http://localhost:3000", "http://localhost:3001"],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // server-to-server, curl, etc.
+      const allowed =
+        origin === config.frontendUrl ||
+        /^http:\/\/localhost(:\d+)?$/.test(origin) ||
+        /\.vercel\.app$/.test(origin);
+      callback(null, allowed);
+    },
     credentials: true,
   })
 );
@@ -46,9 +57,9 @@ async function start() {
     startGenerationWorker();
     startPdfWorker();
 
-    server.listen(config.port, () => {
-      console.log(`Server running on http://localhost:${config.port}`);
-      console.log(`WebSocket at ws://localhost:${config.port}/ws`);
+    server.listen(config.port, "0.0.0.0", () => {
+      console.log(`Server listening on port ${config.port}`);
+      console.log(`WebSocket on ws://0.0.0.0:${config.port}/ws`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
