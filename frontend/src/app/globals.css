@@ -2,7 +2,7 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-[#F5F5F5] text-gray-900 antialiased;
   }
 }
 
@@ -34,4 +34,8 @@
   .no-print {
     display: none !important;
   }
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }

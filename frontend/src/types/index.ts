@@ -4,12 +4,21 @@ export interface QuestionType {
   marks: number;
 }
 
+export interface MatchPair {
+  left: string;
+  right: string;
+}
+
 export interface Question {
   questionNumber: number;
   text: string;
   difficulty: "Easy" | "Moderate" | "Hard";
   marks: number;
   type: string;
+  options?: string[];
+  correctOption?: string;
+  matchPairs?: MatchPair[];
+  blankAnswer?: string;
 }
 
 export interface Section {

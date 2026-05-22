@@ -13,6 +13,9 @@ interface PaperSection {
     text: string;
     difficulty: string;
     marks: number;
+    type?: string;
+    options?: string[];
+    matchPairs?: Array<{ left: string; right: string }>;
   }>;
 }
 
@@ -46,13 +49,18 @@ export async function generatePdfBuffer(paper: PaperData): Promise<Uint8Array> {
     }
   };
 
+  // Strip characters pdf-lib can't encode (newlines, tabs, etc.)
+  const sanitize = (t: string) =>
+    t.replace(/[\n\r\t]/g, " ").replace(/\s+/g, " ").trim();
+
   const drawCentered = (
     text: string,
     size: number,
     f = boldFont
   ) => {
-    const w = f.widthOfTextAtSize(text, size);
-    page.drawText(text, { x: (PAGE_W - w) / 2, y, size, font: f, color: rgb(0, 0, 0) });
+    const clean = sanitize(text);
+    const w = f.widthOfTextAtSize(clean, size);
+    page.drawText(clean, { x: (PAGE_W - w) / 2, y, size, font: f, color: rgb(0, 0, 0) });
     y -= size + 4;
   };
 
@@ -62,23 +70,28 @@ export async function generatePdfBuffer(paper: PaperData): Promise<Uint8Array> {
     f = font,
     x = MARGIN
   ) => {
-    const words = text.split(" ");
-    let line = "";
-    for (const word of words) {
-      const test = line ? `${line} ${word}` : word;
-      if (f.widthOfTextAtSize(test, size) > CONTENT_W - (x - MARGIN)) {
+    const lines = text.split(/\n/);
+    for (const rawLine of lines) {
+      const clean = sanitize(rawLine);
+      if (!clean) { y -= size; continue; }
+      const words = clean.split(" ");
+      let line = "";
+      for (const word of words) {
+        const test = line ? `${line} ${word}` : word;
+        if (f.widthOfTextAtSize(test, size) > CONTENT_W - (x - MARGIN)) {
+          ensureSpace(size + 3);
+          page.drawText(line, { x, y, size, font: f, color: rgb(0, 0, 0) });
+          y -= size + 3;
+          line = word;
+        } else {
+          line = test;
+        }
+      }
+      if (line) {
         ensureSpace(size + 3);
         page.drawText(line, { x, y, size, font: f, color: rgb(0, 0, 0) });
         y -= size + 3;
-        line = word;
-      } else {
-        line = test;
       }
-    }
-    if (line) {
-      ensureSpace(size + 3);
-      page.drawText(line, { x, y, size, font: f, color: rgb(0, 0, 0) });
-      y -= size + 3;
     }
   };
 
@@ -127,12 +140,31 @@ export async function generatePdfBuffer(paper: PaperData): Promise<Uint8Array> {
     y -= 6;
 
     for (const q of section.questions) {
-      ensureSpace(30);
+      ensureSpace(40);
       const prefix = `${q.questionNumber}. `;
       const tag = `[${q.difficulty}] `;
       const suffix = ` [${q.marks} Mark${q.marks > 1 ? "s" : ""}]`;
       drawText(`${prefix}${tag}${q.text}${suffix}`, 11, font, MARGIN + 10);
-      y -= 2;
+
+      // Render options for MCQ / True-False
+      if (q.options && q.options.length > 0) {
+        y -= 2;
+        for (const opt of q.options) {
+          ensureSpace(14);
+          drawText(`    ${opt}`, 10, font, MARGIN + 20);
+        }
+      }
+
+      // Render match pairs
+      if (q.matchPairs && q.matchPairs.length > 0) {
+        y -= 2;
+        for (const pair of q.matchPairs) {
+          ensureSpace(14);
+          drawText(`    ${pair.left}  -->  ${pair.right}`, 10, font, MARGIN + 20);
+        }
+      }
+
+      y -= 4;
     }
   }
 

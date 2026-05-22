@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { useAssignmentStore } from "@/store/assignmentStore";
 import { useWebSocket } from "@/hooks/useWebSocket";
-import { GeneratedPaper } from "@/types";
+import { GeneratedPaper, Question } from "@/types";
 import {
   Download,
   RefreshCw,
@@ -18,116 +18,187 @@ import { useRouter } from "next/navigation";
 
 function DifficultyBadge({ level }: { level: string }) {
   const colors: Record<string, string> = {
-    Easy: "bg-green-100 text-green-700 border-green-200",
-    Moderate: "bg-yellow-100 text-yellow-700 border-yellow-200",
-    Hard: "bg-red-100 text-red-700 border-red-200",
+    Easy: "text-green-700",
+    Moderate: "text-yellow-700",
+    Hard: "text-red-700",
+    Challenging: "text-red-700",
   };
 
   return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 text-xs font-medium rounded border ${colors[level] || "bg-gray-100 text-gray-600 border-gray-200"}`}
-    >
-      {level}
+    <span className={`text-[13px] font-medium ${colors[level] || "text-gray-600"}`}>
+      [{level}]
     </span>
+  );
+}
+
+function QuestionRenderer({ question: q }: { question: Question }) {
+  const type = q.type?.toLowerCase() || "";
+  const isMCQ = type.includes("multiple choice");
+  const isTF = type.includes("true") && type.includes("false");
+  const isFill = type.includes("fill");
+  const isMatch = type.includes("match");
+
+  return (
+    <div className="flex gap-2 text-[13px] leading-relaxed">
+      <span className="font-medium text-gray-800 shrink-0">
+        {q.questionNumber}.
+      </span>
+      <div className="flex-1">
+        <span className="text-gray-800">
+          <DifficultyBadge level={q.difficulty} />{" "}
+          {q.text}{" "}
+          <span className="text-gray-500">
+            [{q.marks} Mark{q.marks > 1 ? "s" : ""}]
+          </span>
+        </span>
+
+        {/* MCQ Options */}
+        {isMCQ && q.options && q.options.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 mt-2 ml-1">
+            {q.options.map((opt, i) => (
+              <div key={i} className="flex items-start gap-2 text-gray-700">
+                <span className="w-5 h-5 rounded-full border border-gray-300 shrink-0 mt-0.5" />
+                <span>{opt}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* True/False Options */}
+        {isTF && (
+          <div className="flex gap-8 mt-2 ml-1">
+            {(q.options && q.options.length > 0
+              ? q.options
+              : ["True", "False"]
+            ).map((opt, i) => (
+              <div key={i} className="flex items-center gap-2 text-gray-700">
+                <span className="w-4 h-4 rounded-sm border border-gray-300 shrink-0" />
+                <span>{opt}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Fill in the Blanks — answer line */}
+        {isFill && !q.text?.includes("________") && (
+          <div className="mt-2 ml-1">
+            <span className="text-gray-500">Answer: </span>
+            <span className="inline-block border-b border-gray-400 min-w-[150px]" />
+          </div>
+        )}
+
+        {/* Match the Following */}
+        {isMatch && q.matchPairs && q.matchPairs.length > 0 && (
+          <div className="mt-3 ml-1 border border-gray-200 rounded-lg overflow-hidden">
+            <div className="grid grid-cols-2 bg-gray-100 text-xs font-semibold text-gray-600">
+              <div className="px-3 py-2 border-r border-gray-200">Column A</div>
+              <div className="px-3 py-2">Column B</div>
+            </div>
+            {q.matchPairs.map((pair, i) => (
+              <div
+                key={i}
+                className="grid grid-cols-2 text-gray-700 border-t border-gray-200"
+              >
+                <div className="px-3 py-2 border-r border-gray-200">
+                  {String.fromCharCode(97 + i)}) {pair.left}
+                </div>
+                <div className="px-3 py-2">
+                  {String.fromCharCode(105 + i)}) {pair.right}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
 function QuestionPaperView({ paper }: { paper: GeneratedPaper }) {
   return (
     <div className="bg-white max-w-4xl mx-auto" id="question-paper">
-      {/* Header */}
-      <div className="text-center mb-6 pb-4 border-b-2 border-gray-900">
-        <h1 className="text-xl lg:text-2xl font-bold text-gray-900 mb-1">
+      {/* School Header */}
+      <div className="text-center mb-6">
+        <h1 className="text-[20px] lg:text-[24px] font-bold text-gray-900 mb-1">
           {paper.schoolName}
         </h1>
-        <p className="text-sm text-gray-600">Subject: {paper.subject}</p>
-        <p className="text-sm text-gray-600">Class: {paper.className}</p>
+        <p className="text-[14px] text-gray-600">Subject: {paper.subject}</p>
+        <p className="text-[14px] text-gray-600">Class: {paper.className}</p>
       </div>
 
       {/* Meta Info */}
-      <div className="flex justify-between items-center mb-4 text-sm">
-        <span className="text-gray-700">
+      <div className="flex justify-between items-center mb-3 text-[13px]">
+        <span className="text-gray-700 font-medium">
           Time Allowed: {paper.timeAllowed}
         </span>
-        <span className="text-gray-700">
+        <span className="text-gray-700 font-medium">
           Maximum Marks: {paper.maxMarks}
         </span>
       </div>
 
-      <p className="text-sm text-gray-600 italic mb-6">
+      <p className="text-[13px] text-gray-600 italic mb-6">
         All questions are compulsory unless stated otherwise.
       </p>
 
       {/* Student Info */}
-      <div className="mb-8 space-y-2 text-sm">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">Name:</span>
-          <span className="flex-1 border-b border-gray-400 min-w-[200px]" />
+      <div className="mb-8 space-y-1.5 text-[13px]">
+        <div className="flex items-baseline gap-1">
+          <span className="font-semibold">Name:</span>
+          <span className="flex-1 border-b border-gray-400 max-w-[200px]" />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="font-medium">Roll Number:</span>
-          <span className="flex-1 border-b border-gray-400 min-w-[160px]" />
+        <div className="flex items-baseline gap-1">
+          <span className="font-semibold">Roll Number:</span>
+          <span className="flex-1 border-b border-gray-400 max-w-[160px]" />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="font-medium">Class: {paper.className} Section:</span>
-          <span className="flex-1 border-b border-gray-400 min-w-[100px]" />
+        <div className="flex items-baseline gap-1">
+          <span className="font-semibold">Class: {paper.className} Section:</span>
+          <span className="flex-1 border-b border-gray-400 max-w-[100px]" />
         </div>
       </div>
 
       {/* Sections */}
       {paper.sections.map((section, sIdx) => (
         <div key={sIdx} className="mb-8">
-          <h2 className="text-center text-lg font-bold text-gray-900 mb-2">
+          <h2 className="text-center text-[16px] font-bold text-gray-900 mb-3">
             {section.title}
           </h2>
-          <h3 className="text-sm font-semibold text-gray-700 mb-1">
+          <h3 className="text-[14px] font-bold text-gray-800 mb-0.5">
             {section.questionType}
           </h3>
-          <p className="text-sm italic text-gray-500 mb-4">
+          <p className="text-[13px] italic text-gray-500 mb-4">
             {section.instruction}
           </p>
 
-          <ol className="space-y-3">
+          <ol className="space-y-4">
             {section.questions.map((q) => (
-              <li key={q.questionNumber} className="flex gap-2 text-sm">
-                <span className="font-medium text-gray-700 shrink-0">
-                  {q.questionNumber}.
-                </span>
-                <div className="flex-1">
-                  <span className="text-gray-800">{q.text}</span>
-                  <div className="flex items-center gap-2 mt-1">
-                    <DifficultyBadge level={q.difficulty} />
-                    <span className="text-xs text-gray-500">
-                      [{q.marks} Mark{q.marks > 1 ? "s" : ""}]
-                    </span>
-                  </div>
-                </div>
+              <li key={q.questionNumber}>
+                <QuestionRenderer question={q} />
               </li>
             ))}
           </ol>
         </div>
       ))}
 
-      <div className="text-center py-4 border-t border-gray-300 text-sm font-semibold text-gray-700">
+      <div className="text-center py-4 text-[13px] font-bold text-gray-700 mt-4">
         End of Question Paper
       </div>
 
       {/* Answer Key */}
       {paper.answerKey && paper.answerKey.length > 0 && (
-        <div className="mt-8 pt-6 border-t-2 border-gray-900">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <h2 className="text-[16px] font-bold text-gray-900 mb-4">
             Answer Key:
           </h2>
-          <ol className="space-y-3">
+          <ol className="space-y-2.5">
             {paper.answerKey.map((ak) => (
               <li
                 key={ak.questionNumber}
-                className="flex gap-2 text-sm"
+                className="flex gap-2 text-[13px]"
               >
                 <span className="font-medium text-gray-700 shrink-0">
                   {ak.questionNumber}.
                 </span>
-                <span className="text-gray-700">{ak.answer}</span>
+                <span className="text-gray-700 leading-relaxed">{ak.answer}</span>
               </li>
             ))}
           </ol>
@@ -253,23 +324,23 @@ export default function AssignmentDetailPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header title="Assignment" showBack />
+      <Header title="Create New" showBack />
 
       <div className="flex-1 p-4 lg:p-8">
         {/* AI Message Bar */}
         {currentAssignment.status === "completed" &&
           currentAssignment.generatedPaper && (
             <div className="max-w-4xl mx-auto mb-6">
-              <div className="bg-gray-800 text-white rounded-xl p-4 lg:p-5">
-                <p className="text-sm leading-relaxed mb-3">
+              <div className="bg-[#2D2D2D] text-white rounded-xl p-4 lg:p-5">
+                <p className="text-[13px] leading-relaxed mb-3">
                   Certainly, Lakshya! Here are customized Question Paper for
                   your CBSE Grade 8 Science classes on the NCERT chapters:
                 </p>
                 <button
                   onClick={handleDownloadPDF}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm font-medium transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#3a3a3a] hover:bg-[#4a4a4a] border border-gray-600 rounded-lg text-[13px] font-medium transition-colors"
                 >
-                  <Download size={16} />
+                  <Download size={15} />
                   Download as PDF
                 </button>
               </div>
@@ -337,7 +408,7 @@ export default function AssignmentDetailPage() {
                 </button>
               </div>
 
-              <div className="max-w-4xl mx-auto card p-6 lg:p-10" ref={paperRef}>
+              <div className="max-w-4xl mx-auto bg-white rounded-xl border border-gray-100 shadow-[0_1px_4px_rgba(0,0,0,0.05)] p-6 lg:p-10" ref={paperRef}>
                 <QuestionPaperView paper={currentAssignment.generatedPaper} />
               </div>
             </>

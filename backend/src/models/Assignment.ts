@@ -12,6 +12,10 @@ export interface IQuestion {
   difficulty: "Easy" | "Moderate" | "Hard";
   marks: number;
   type: string;
+  options?: string[];
+  correctOption?: string;
+  matchPairs?: Array<{ left: string; right: string }>;
+  blankAnswer?: string;
 }
 
 export interface ISection {
@@ -64,6 +68,10 @@ const QuestionSchema = new Schema<IQuestion>({
   difficulty: { type: String, enum: ["Easy", "Moderate", "Hard"], required: true },
   marks: { type: Number, required: true },
   type: { type: String, required: true },
+  options: [{ type: String }],
+  correctOption: { type: String },
+  matchPairs: [{ left: String, right: String }],
+  blankAnswer: { type: String },
 });
 
 const SectionSchema = new Schema<ISection>({

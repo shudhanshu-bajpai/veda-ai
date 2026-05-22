@@ -50,15 +50,17 @@ IMPORTANT: Return ONLY valid JSON (no markdown, no code fences, no backticks) wi
     {
       "title": "Section A",
       "instruction": "Attempt all questions. Each question carries X marks",
-      "questionType": "Short Answer Questions",
-      "marksPerQuestion": 2,
+      "questionType": "Multiple Choice Questions",
+      "marksPerQuestion": 1,
       "questions": [
         {
           "questionNumber": 1,
-          "text": "Question text here",
+          "text": "What is the capital of France?",
           "difficulty": "Easy",
-          "marks": 2,
-          "type": "Short Answer Questions"
+          "marks": 1,
+          "type": "Multiple Choice Questions",
+          "options": ["A) London", "B) Berlin", "C) Paris", "D) Madrid"],
+          "correctOption": "C"
         }
       ]
     }
@@ -66,16 +68,27 @@ IMPORTANT: Return ONLY valid JSON (no markdown, no code fences, no backticks) wi
   "answerKey": [
     {
       "questionNumber": 1,
-      "answer": "Detailed answer here"
+      "answer": "C) Paris — Paris is the capital of France."
     }
   ]
 }
 
-Rules:
+QUESTION TYPE FORMAT RULES (follow strictly):
+
+1. "Multiple Choice Questions" — MUST include "options" array with 4 choices prefixed A), B), C), D) and "correctOption" with the letter.
+2. "True/False" — MUST include "options": ["True", "False"] and "correctOption" with "True" or "False".
+3. "Fill in the Blanks" — The "text" must contain "________" where the blank is. Include "blankAnswer" with the correct word/phrase.
+4. "Match the Following" — MUST include "matchPairs" array with objects like {"left": "Column A item", "right": "Column B item"}. The "text" should say "Match the following:".
+5. "Short Questions" — Just "text" with the question. No options needed.
+6. "Long Questions" — Just "text" with the question. No options needed.
+7. "Diagram/Graph-Based Questions" — "text" should describe what to draw/analyze. No options needed.
+8. "Numerical Problems" — "text" should contain the problem with numbers. No options needed.
+
+Other rules:
 - Each section corresponds to one question type
 - Distribute difficulty: ~40% Easy, ~35% Moderate, ~25% Hard
 - Questions must be academically sound and age-appropriate
-- Include difficulty tags: "Easy", "Moderate", or "Hard"
+- Difficulty tags: "Easy", "Moderate", or "Hard"
 - Answer key must cover ALL questions with detailed answers
 - Question numbers must be sequential across all sections
 - Return ONLY the JSON object, no extra text, no markdown`;

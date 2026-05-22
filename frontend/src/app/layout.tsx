@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
+import BottomNav from "@/components/layout/BottomNav";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -19,10 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen bg-[#F5F5F5]">
           <Sidebar />
-          <main className="flex-1 min-h-screen">{children}</main>
+          <main className="flex-1 min-h-screen pb-20 lg:pb-0 bg-[#F5F5F5]">{children}</main>
         </div>
+        <BottomNav />
         <Toaster
           position="top-right"
           toastOptions={{
