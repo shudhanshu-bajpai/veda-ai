@@ -108,7 +108,7 @@ export default function CreateAssignmentPage() {
             </h1>
           </div>
           <p className="text-[12px] text-gray-500 ml-4">
-            Set up a new assignment for your students.
+            Set up a new assignment for your students
           </p>
         </div>
 

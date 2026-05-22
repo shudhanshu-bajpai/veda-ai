@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Loader2,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -324,7 +325,7 @@ export default function AssignmentDetailPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header title="Create New" showBack />
+      <Header title="Create New" showBack icon={Sparkles} />
 
       <div className="flex-1 p-4 lg:p-8">
         {/* AI Message Bar */}

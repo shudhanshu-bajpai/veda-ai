@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Bell, ChevronDown, Menu, LayoutGrid } from "lucide-react";
+import { ArrowLeft, Bell, ChevronDown, Menu, LayoutGrid, Sparkles, type LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -8,7 +8,6 @@ import {
   Home,
   Users,
   ClipboardList,
-  Sparkles,
   BookOpen,
   Settings,
   X,
@@ -26,44 +25,41 @@ const navItems = [
 interface HeaderProps {
   title?: string;
   showBack?: boolean;
+  showMobileBack?: boolean;
+  icon?: LucideIcon;
 }
 
-export default function Header({ title = "Assignment", showBack = false }: HeaderProps) {
+export default function Header({
+  title = "Assignment",
+  showBack = false,
+  showMobileBack,
+  icon: HeaderIcon = LayoutGrid,
+}: HeaderProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileBack = showMobileBack ?? showBack;
 
   return (
     <>
-      {/* Mobile Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 lg:hidden">
-        <div className="flex items-center justify-between px-4 h-[52px]">
-          <div className="flex items-center gap-2.5">
-            {showBack ? (
-              <>
-                <button
-                  onClick={() => router.back()}
-                  className="p-1 hover:bg-gray-100 rounded-md transition-colors"
-                >
-                  <ArrowLeft size={18} className="text-gray-600" />
-                </button>
-                <span className="text-[14px] font-semibold text-gray-900">{title}</span>
-              </>
-            ) : (
-              <Link href="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-[#2D2D2D] rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-[11px]">V</span>
-                </div>
-                <span className="text-[15px] font-bold text-gray-900 tracking-tight">VedaAI</span>
-              </Link>
-            )}
-          </div>
+      {/* Mobile Header — Always shows VedaAI top row */}
+      <header className="sticky top-0 z-40 bg-white lg:hidden">
+        {/* Top row: VedaAI + actions */}
+        <div className="flex items-center justify-between px-4 h-[52px] border-b border-gray-100">
+          <Link href="/" className="inline-block">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/vedaai-logo.jpg"
+              alt="VedaAI"
+              className="h-7 w-auto object-contain"
+            />
+          </Link>
 
           <div className="flex items-center gap-2">
             <button className="relative p-1.5 hover:bg-gray-100 rounded-full transition-colors">
               <Bell size={17} className="text-gray-500" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-[#E8704F] rounded-full border border-white" />
             </button>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-[11px] font-bold">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-200 to-orange-400 flex items-center justify-center text-white text-[10px] font-bold">
               JD
             </div>
             <button
@@ -74,6 +70,21 @@ export default function Header({ title = "Assignment", showBack = false }: Heade
             </button>
           </div>
         </div>
+
+        {/* Sub-header row: back arrow + centered title */}
+        {mobileBack && (
+          <div className="flex items-center px-4 h-[44px] border-b border-gray-100 relative">
+            <button
+              onClick={() => router.back()}
+              className="p-1 hover:bg-gray-100 rounded-md transition-colors z-10"
+            >
+              <ArrowLeft size={18} className="text-gray-600" />
+            </button>
+            <span className="absolute left-1/2 -translate-x-1/2 text-[14px] font-semibold text-gray-900">
+              {title}
+            </span>
+          </div>
+        )}
       </header>
 
       {/* Desktop Header */}
@@ -89,7 +100,7 @@ export default function Header({ title = "Assignment", showBack = false }: Heade
               </button>
             )}
             <div className="flex items-center gap-2">
-              <LayoutGrid size={16} className="text-gray-400" />
+              <HeaderIcon size={16} className="text-gray-400" />
               <span className="text-[13px] font-medium text-gray-600">{title}</span>
             </div>
           </div>
@@ -97,10 +108,10 @@ export default function Header({ title = "Assignment", showBack = false }: Heade
           <div className="flex items-center gap-3">
             <button className="relative p-2 hover:bg-gray-100 rounded-full transition-colors">
               <Bell size={17} className="text-gray-500" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#E8704F] rounded-full border border-white" />
             </button>
-            <div className="flex items-center gap-2.5 cursor-pointer">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-[11px] font-bold">
+            <div className="flex items-center gap-2 cursor-pointer bg-white border border-gray-200 rounded-full pl-1 pr-3 py-1 hover:bg-gray-50 transition-colors">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-200 to-orange-400 flex items-center justify-center text-white text-[10px] font-bold">
                 JD
               </div>
               <span className="text-[13px] font-medium text-gray-700">John Doe</span>
@@ -119,12 +130,12 @@ export default function Header({ title = "Assignment", showBack = false }: Heade
           />
           <div className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-xl">
             <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 bg-gradient-to-br from-gray-800 to-gray-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">V</span>
-                </div>
-                <span className="text-lg font-bold text-gray-900">VedaAI</span>
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/vedaai-logo.jpg"
+                alt="VedaAI"
+                className="h-9 w-auto object-contain"
+              />
               <button onClick={() => setMobileMenuOpen(false)}>
                 <X size={20} className="text-gray-500" />
               </button>

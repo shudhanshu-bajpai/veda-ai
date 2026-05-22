@@ -49,6 +49,9 @@ const defaultForm: AssignmentFormState = {
   dueDate: "",
   questionTypes: [
     { type: "Multiple Choice Questions", count: 4, marks: 1 },
+    { type: "Short Questions", count: 3, marks: 2 },
+    { type: "Diagram/Graph-Based Questions", count: 5, marks: 5 },
+    { type: "Numerical Problems", count: 5, marks: 5 },
   ],
   additionalInstructions: "",
   file: null,
@@ -72,7 +75,7 @@ export const useAssignmentStore = create<AssignmentStore>((set, get) => ({
         ...state.form,
         questionTypes: [
           ...state.form.questionTypes,
-          { type: "Short Questions", count: 3, marks: 2 },
+          { type: "Long Questions", count: 3, marks: 5 },
         ],
       },
     })),

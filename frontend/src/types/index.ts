@@ -12,7 +12,7 @@ export interface MatchPair {
 export interface Question {
   questionNumber: number;
   text: string;
-  difficulty: "Easy" | "Moderate" | "Hard";
+  difficulty: "Easy" | "Moderate" | "Hard" | "Challenging";
   marks: number;
   type: string;
   options?: string[];

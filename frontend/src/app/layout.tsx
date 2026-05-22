@@ -5,11 +5,16 @@ import Sidebar from "@/components/layout/Sidebar";
 import BottomNav from "@/components/layout/BottomNav";
 import { Toaster } from "react-hot-toast";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "VedaAI - AI Assessment Creator",
   description: "Create AI-powered assessments for your classes",
+  icons: {
+    icon: "/vedaai-logo.jpg",
+    shortcut: "/vedaai-logo.jpg",
+    apple: "/vedaai-logo.jpg",
+  },
 };
 
 export default function RootLayout({
@@ -18,11 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="flex min-h-screen bg-[#F5F5F5]">
+    <html lang="en" className={inter.variable}>
+      <body className={`${inter.className} antialiased`}>
+        <div className="flex min-h-screen">
           <Sidebar />
-          <main className="flex-1 min-h-screen pb-20 lg:pb-0 bg-[#F5F5F5]">{children}</main>
+          <main className="flex-1 min-h-screen pb-24 lg:pb-0 bg-[#F0F0F0]">{children}</main>
         </div>
         <BottomNav />
         <Toaster

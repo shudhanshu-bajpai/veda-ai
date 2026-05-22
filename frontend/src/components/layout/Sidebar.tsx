@@ -25,56 +25,66 @@ export default function Sidebar() {
   const { assignments } = useAssignmentStore();
   const assignmentCount = assignments.length;
 
+  const isOutputPage =
+    /^\/assignments\/[^/]+$/.test(pathname) && pathname !== "/assignments/create";
+
   return (
-    <aside className="hidden lg:flex flex-col w-[240px] min-h-screen bg-white border-r border-gray-200 shrink-0">
-      {/* Logo */}
-      <div className="px-5 py-5">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-[#2D2D2D] rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-sm">V</span>
-          </div>
-          <span className="text-[17px] font-bold text-gray-900 tracking-tight">
-            VedaAI
-          </span>
+    <aside className="hidden lg:flex flex-col w-[230px] min-h-screen bg-white border-r border-gray-100 shrink-0 px-4 py-5">
+      {/* VedaAI Logo */}
+      <div className="mb-5">
+        <Link href="/" className="inline-block">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/vedaai-logo.jpg"
+            alt="VedaAI"
+            className="h-10 w-auto object-contain"
+          />
         </Link>
       </div>
 
-      {/* Create Button */}
-      <div className="px-4 pb-4">
+      {/* Create Button with orange border */}
+      <div className="mb-6">
         <Link
           href="/assignments/create"
-          className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#2D2D2D] text-white rounded-full text-[13px] font-semibold hover:bg-[#3a3a3a] transition-colors"
+          className="flex items-center justify-center gap-2 w-full py-[9px] bg-[#2D2D2D] text-white rounded-full text-[13px] font-semibold hover:bg-[#3a3a3a] transition-colors border-2 border-[#E8704F]/60"
         >
-          <span className="text-base leading-none">✦</span>
+          <Sparkles size={14} className="text-[#E8704F]" />
           Create Assignment
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 space-y-0.5">
+      <nav className="flex-1 space-y-1">
         {navItems.map((item) => {
-          const isActive =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname.startsWith(item.href);
+          let isActive: boolean;
+          if (isOutputPage && item.href === "/toolkit") {
+            isActive = true;
+          } else if (isOutputPage && item.href === "/assignments") {
+            isActive = false;
+          } else {
+            isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
+          }
           const Icon = item.icon;
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center justify-between px-3 py-[9px] rounded-lg text-[13px] font-medium transition-colors ${
+              className={`flex items-center justify-between px-3 py-[9px] rounded-lg text-[13px] transition-colors ${
                 isActive
-                  ? "bg-gray-100 text-gray-900 font-semibold"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
+                  ? "text-gray-900 font-semibold"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-800 font-medium"
               }`}
             >
               <div className="flex items-center gap-3">
-                <Icon size={17} strokeWidth={isActive ? 2.2 : 1.8} />
+                <Icon size={17} strokeWidth={isActive ? 2 : 1.7} />
                 <span>{item.label}</span>
               </div>
               {item.showBadge && assignmentCount > 0 && (
-                <span className="min-w-[20px] h-5 px-1.5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                <span className="min-w-[24px] h-[18px] px-1.5 bg-[#E8704F] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                   {assignmentCount}
                 </span>
               )}
@@ -84,30 +94,28 @@ export default function Sidebar() {
       </nav>
 
       {/* Settings */}
-      <div className="px-3 py-2">
+      <div className="mb-3">
         <Link
           href="/settings"
           className="flex items-center gap-3 px-3 py-[9px] rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-colors"
         >
-          <Settings size={17} strokeWidth={1.8} />
+          <Settings size={17} strokeWidth={1.7} />
           Settings
         </Link>
       </div>
 
-      {/* School Info */}
-      <div className="px-4 py-4 border-t border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden bg-gradient-to-br from-orange-200 to-orange-400 flex items-center justify-center">
-            <span className="text-white text-sm font-bold">D</span>
-          </div>
-          <div>
-            <p className="text-[13px] font-semibold text-gray-900 leading-tight">
-              Delhi Public School
-            </p>
-            <p className="text-[11px] text-gray-500 leading-tight mt-0.5">
-              Bokaro Steel City
-            </p>
-          </div>
+      {/* School Info Pill */}
+      <div className="bg-[#F5F5F5] rounded-2xl p-2.5 flex items-center gap-2.5">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-200 to-orange-400 flex items-center justify-center shrink-0 overflow-hidden">
+          <span className="text-white text-sm font-bold">D</span>
+        </div>
+        <div className="min-w-0">
+          <p className="text-[12px] font-bold text-gray-900 leading-tight truncate">
+            Delhi Public School
+          </p>
+          <p className="text-[10px] text-gray-500 leading-tight mt-0.5">
+            Bokaro Steel City
+          </p>
         </div>
       </div>
     </aside>

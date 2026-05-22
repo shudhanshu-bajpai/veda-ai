@@ -39,10 +39,12 @@ export default function AssignmentsPage() {
     fetchAssignments();
   };
 
-  if (isLoading && assignments.length === 0) {
+  const hasAssignments = assignments.length > 0;
+
+  if (isLoading && !hasAssignments) {
     return (
       <div className="flex flex-col min-h-screen">
-        <Header title="Assignment" showBack />
+        <Header title="Assignment" showBack showMobileBack={false} />
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-900 border-t-transparent" />
         </div>
@@ -51,10 +53,13 @@ export default function AssignmentsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen" onClick={() => menuOpenId && setMenuOpenId(null)}>
-      <Header title="Assignment" showBack />
+    <div
+      className="flex flex-col min-h-screen"
+      onClick={() => menuOpenId && setMenuOpenId(null)}
+    >
+      <Header title="Assignment" showBack showMobileBack={hasAssignments} />
 
-      <div className="flex-1 p-4 lg:px-8 lg:py-6">
+      <div className="flex-1 p-4 lg:px-8 lg:py-6 relative">
         {assignments.length === 0 ? (
           /* ---- Empty State ---- */
           <div className="flex-1 flex flex-col items-center justify-center py-20">
@@ -88,22 +93,25 @@ export default function AssignmentsPage() {
             <div className="mb-5 hidden lg:block">
               <div className="flex items-center gap-2 mb-0.5">
                 <div className="w-2 h-2 bg-green-500 rounded-full" />
-                <h1 className="text-[18px] font-bold text-gray-900">Assignments</h1>
+                <h1 className="text-[18px] font-bold text-gray-900">
+                  Assignments
+                </h1>
               </div>
               <p className="text-[12px] text-gray-500 ml-4">
                 Manage and create assignments for your classes.
               </p>
             </div>
 
-            {/* ---- Filter + Search ---- */}
-            <div className="flex gap-3 mb-5">
-              <button className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-gray-200 rounded-lg text-[12px] text-gray-600 font-medium shrink-0 hover:bg-gray-50 transition-colors">
-                <SlidersHorizontal size={13} />
-                Filter By
+            {/* ---- Filter + Search row ---- */}
+            <div className="flex items-center justify-between gap-3 mb-5">
+              <button className="flex items-center gap-1.5 px-1 py-2 text-[13px] text-gray-600 font-medium shrink-0 hover:text-gray-900 transition-colors">
+                <SlidersHorizontal size={14} />
+                <span className="hidden lg:inline">Filter By</span>
+                <span className="lg:hidden">Filter</span>
               </button>
-              <div className="relative flex-1 max-w-xs">
+              <div className="relative w-full max-w-[300px]">
                 <Search
-                  size={15}
+                  size={14}
                   className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                 />
                 <input
@@ -111,30 +119,42 @@ export default function AssignmentsPage() {
                   placeholder="Search Assignment"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all"
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-full text-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all hidden lg:block"
+                />
+                <input
+                  type="text"
+                  placeholder="Search Name"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-full text-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all lg:hidden"
                 />
               </div>
             </div>
 
             {/* ---- Mobile: List view ---- */}
-            <div className="flex flex-col gap-3 lg:hidden">
+            <div className="flex flex-col gap-3 lg:hidden pb-24">
               {filtered.map((assignment) => (
                 <div
                   key={assignment._id}
-                  className="bg-white rounded-xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-4 relative"
+                  className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-4 relative"
                 >
                   <div className="flex items-start justify-between">
                     <Link
                       href={`/assignments/${assignment._id}`}
-                      className="text-[14px] font-semibold text-gray-900 flex-1 pr-2"
+                      className="text-[14px] font-bold text-gray-900 flex-1 pr-2"
                     >
                       {assignment.title}
                     </Link>
-                    <div className="relative" onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className="relative"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
                         onClick={() =>
                           setMenuOpenId(
-                            menuOpenId === assignment._id ? null : assignment._id
+                            menuOpenId === assignment._id
+                              ? null
+                              : assignment._id
                           )
                         }
                         className="p-1"
@@ -142,7 +162,7 @@ export default function AssignmentsPage() {
                         <MoreVertical size={16} className="text-gray-400" />
                       </button>
                       {menuOpenId === assignment._id && (
-                        <div className="absolute right-0 top-7 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1">
+                        <div className="absolute right-0 top-7 w-40 bg-white border border-gray-100 rounded-xl shadow-lg z-10 py-1.5">
                           <Link
                             href={`/assignments/${assignment._id}`}
                             className="block px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
@@ -152,7 +172,7 @@ export default function AssignmentsPage() {
                           </Link>
                           <button
                             onClick={() => handleDelete(assignment._id)}
-                            className="block w-full text-left px-4 py-2 text-[13px] text-red-500 hover:bg-red-50"
+                            className="block w-full text-left px-4 py-2 text-[13px] text-[#EF4444] hover:bg-red-50 font-semibold"
                           >
                             Delete
                           </button>
@@ -160,13 +180,19 @@ export default function AssignmentsPage() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 mt-2.5 text-[11px] text-gray-500">
-                    <span>
-                      Assigned on : {format(new Date(assignment.createdAt), "dd-MM-yyyy")}
+                  <div className="flex items-center gap-3 mt-2 text-[10.5px] text-gray-500 font-medium">
+                    <span className="whitespace-nowrap">
+                      <span className="font-semibold text-gray-700">
+                        Assigned on
+                      </span>{" "}
+                      : {format(new Date(assignment.createdAt), "dd-MM-yyyy")}
                     </span>
                     {assignment.dueDate && (
-                      <span>
-                        Due : {format(new Date(assignment.dueDate), "dd-MM-yyyy")}
+                      <span className="whitespace-nowrap">
+                        <span className="font-semibold text-gray-700">
+                          Due
+                        </span>{" "}
+                        : {format(new Date(assignment.dueDate), "dd-MM-yyyy")}
                       </span>
                     )}
                   </div>
@@ -174,85 +200,102 @@ export default function AssignmentsPage() {
               ))}
             </div>
 
-            {/* ---- Desktop: 2-column grid ---- */}
-            <div className="hidden lg:grid grid-cols-2 gap-4">
-              {filtered.map((assignment) => (
-                <div
-                  key={assignment._id}
-                  className="bg-white rounded-xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.04)] p-5 relative"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <Link
-                      href={`/assignments/${assignment._id}`}
-                      className="text-[15px] font-bold text-gray-900 hover:underline flex-1 pr-2"
-                    >
-                      {assignment.title}
-                    </Link>
-                    <div className="relative" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        onClick={() =>
-                          setMenuOpenId(
-                            menuOpenId === assignment._id ? null : assignment._id
-                          )
-                        }
-                        className="p-1 hover:bg-gray-100 rounded transition-colors"
+            {/* ---- Desktop: 2-column grid with fade ---- */}
+            <div className="hidden lg:block relative">
+              <div className="grid grid-cols-2 gap-4 pb-32 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
+                {filtered.map((assignment) => (
+                  <div
+                    key={assignment._id}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-5 relative"
+                  >
+                    <div className="flex items-start justify-between mb-5">
+                      <Link
+                        href={`/assignments/${assignment._id}`}
+                        className="text-[15px] font-bold text-gray-900 flex-1 pr-2 hover:text-gray-700"
                       >
-                        <MoreVertical size={16} className="text-gray-400" />
-                      </button>
-                      {menuOpenId === assignment._id && (
-                        <div className="absolute right-0 top-8 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1">
-                          <Link
-                            href={`/assignments/${assignment._id}`}
-                            className="block px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
-                            onClick={() => setMenuOpenId(null)}
-                          >
-                            View Assignment
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(assignment._id)}
-                            className="block w-full text-left px-4 py-2 text-[13px] text-red-500 hover:bg-red-50"
-                          >
-                            Delete
-                          </button>
-                        </div>
+                        {assignment.title}
+                      </Link>
+                      <div
+                        className="relative"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          onClick={() =>
+                            setMenuOpenId(
+                              menuOpenId === assignment._id
+                                ? null
+                                : assignment._id
+                            )
+                          }
+                          className="p-1 hover:bg-gray-100 rounded transition-colors"
+                        >
+                          <MoreVertical size={16} className="text-gray-400" />
+                        </button>
+                        {menuOpenId === assignment._id && (
+                          <div className="absolute right-0 top-8 w-48 bg-white border border-gray-100 rounded-xl shadow-xl z-10 py-1.5">
+                            <Link
+                              href={`/assignments/${assignment._id}`}
+                              className="block px-4 py-2 text-[13px] text-gray-700 hover:bg-gray-50"
+                              onClick={() => setMenuOpenId(null)}
+                            >
+                              View Assignment
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(assignment._id)}
+                              className="block w-full text-left px-4 py-2 text-[13px] text-[#EF4444] hover:bg-red-50 font-semibold"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-[12px] text-gray-500 font-medium">
+                      <span>
+                        <span className="font-semibold text-gray-700">
+                          Assigned on
+                        </span>{" "}
+                        : {format(new Date(assignment.createdAt), "dd-MM-yyyy")}
+                      </span>
+                      {assignment.dueDate && (
+                        <span>
+                          <span className="font-semibold text-gray-700">
+                            Due
+                          </span>{" "}
+                          :{" "}
+                          {format(new Date(assignment.dueDate), "dd-MM-yyyy")}
+                        </span>
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-6 text-[12px] text-gray-500">
-                    <span>
-                      Assigned on : {format(new Date(assignment.createdAt), "dd-MM-yyyy")}
-                    </span>
-                    {assignment.dueDate && (
-                      <span>
-                        Due : {format(new Date(assignment.dueDate), "dd-MM-yyyy")}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            {/* Desktop create button */}
-            <div className="hidden lg:flex justify-center mt-8">
-              <Link
-                href="/assignments/create"
-                className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#2D2D2D] text-white rounded-lg text-[13px] font-semibold hover:bg-[#3a3a3a] transition-colors"
-              >
-                <Plus size={15} />
-                Create Assignment
-              </Link>
+              {/* Fade gradient + floating Create button (desktop) */}
+              <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F0F0F0] via-[#F0F0F0]/80 to-transparent pointer-events-none" />
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
+                <Link
+                  href="/assignments/create"
+                  className="pointer-events-auto inline-flex items-center gap-2 px-5 py-2.5 bg-[#2D2D2D] text-white rounded-full text-[13px] font-semibold hover:bg-[#3a3a3a] transition-colors shadow-lg"
+                >
+                  <Plus size={15} />
+                  Create Assignment
+                </Link>
+              </div>
             </div>
           </>
         )}
       </div>
 
       {/* Mobile FAB */}
-      <Link
-        href="/assignments/create"
-        className="lg:hidden fixed bottom-20 right-4 w-12 h-12 bg-[#E8704F] hover:bg-[#d4603f] text-white rounded-full shadow-lg flex items-center justify-center z-40 transition-colors"
-      >
-        <Plus size={24} />
-      </Link>
+      {hasAssignments && (
+        <Link
+          href="/assignments/create"
+          className="lg:hidden fixed bottom-20 right-4 w-12 h-12 bg-[#E8704F] hover:bg-[#d4603f] text-white rounded-full shadow-lg flex items-center justify-center z-40 transition-colors"
+        >
+          <Plus size={24} />
+        </Link>
+      )}
     </div>
   );
 }
