@@ -4,7 +4,6 @@ An AI-powered assessment creator for teachers. You feed in some details about an
 
 Built as a hiring assignment for VedaAI. Took about 3 days from empty folder to working app, including a couple of detours I'll get to below.
 
-Live demo: _(add link after deploying)_
 
 ---
 
