@@ -44,16 +44,27 @@ app.get("/api/health", (_req, res) => {
 setupWebSocket(server);
 
 async function start() {
+  // Required env vars — fail fast with a clear message if missing.
+  const missing: string[] = [];
+  if (!process.env.MONGODB_URI) missing.push("MONGODB_URI");
+  if (!process.env.GEMINI_API_KEY) missing.push("GEMINI_API_KEY");
+  if (missing.length) {
+    console.error(
+      `\n[FATAL] Missing required env vars: ${missing.join(", ")}\n` +
+        `Set them in the Render dashboard (Service → Environment) and redeploy.\n`
+    );
+    process.exit(1);
+  }
+
   try {
-    await mongoose.connect(config.mongodbUri);
+    console.log("Connecting to MongoDB...");
+    await mongoose.connect(config.mongodbUri, {
+      serverSelectionTimeoutMS: 10_000,
+    });
     console.log("Connected to MongoDB");
 
     await initRedis();
-
-    // Initialize BullMQ queues (generation + PDF)
     initQueues();
-
-    // Start BullMQ workers
     startGenerationWorker();
     startPdfWorker();
 
@@ -62,7 +73,22 @@ async function start() {
       console.log(`WebSocket on ws://0.0.0.0:${config.port}/ws`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    const err = error as Error & { code?: string; reason?: unknown };
+    console.error("\n[FATAL] Failed to start server:");
+    console.error(`  message: ${err.message}`);
+    if (err.code) console.error(`  code:    ${err.code}`);
+    if (err.message?.includes("ENOTFOUND") || err.message?.includes("ServerSelection")) {
+      console.error(
+        "\nLikely cause: MongoDB can't be reached. Check:\n" +
+          "  1. MONGODB_URI is correct (try it locally with mongosh)\n" +
+          "  2. Atlas → Network Access allows 0.0.0.0/0 (or this host's IP)\n"
+      );
+    }
+    if (err.message?.includes("Authentication failed") || err.message?.includes("bad auth")) {
+      console.error(
+        "\nLikely cause: MongoDB credentials are wrong. Check the username/password in MONGODB_URI.\n"
+      );
+    }
     process.exit(1);
   }
 }

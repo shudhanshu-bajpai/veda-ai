@@ -18,15 +18,8 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 function DifficultyBadge({ level }: { level: string }) {
-  const colors: Record<string, string> = {
-    Easy: "text-green-700",
-    Moderate: "text-yellow-700",
-    Hard: "text-red-700",
-    Challenging: "text-red-700",
-  };
-
   return (
-    <span className={`text-[13px] font-medium ${colors[level] || "text-gray-600"}`}>
+    <span className="text-[13px] font-medium text-gray-900">
       [{level}]
     </span>
   );
@@ -328,23 +321,17 @@ export default function AssignmentDetailPage() {
       <Header title="Create New" showBack icon={Sparkles} />
 
       <div className="flex-1 p-4 lg:p-8">
-        {/* AI Message Bar */}
+        {/* Download button */}
         {currentAssignment.status === "completed" &&
           currentAssignment.generatedPaper && (
-            <div className="max-w-4xl mx-auto mb-6">
-              <div className="bg-[#2D2D2D] text-white rounded-xl p-4 lg:p-5">
-                <p className="text-[13px] leading-relaxed mb-3">
-                  Certainly, Lakshya! Here are customized Question Paper for
-                  your CBSE Grade 8 Science classes on the NCERT chapters:
-                </p>
-                <button
-                  onClick={handleDownloadPDF}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#3a3a3a] hover:bg-[#4a4a4a] border border-gray-600 rounded-lg text-[13px] font-medium transition-colors"
-                >
-                  <Download size={15} />
-                  Download as PDF
-                </button>
-              </div>
+            <div className="max-w-4xl mx-auto mb-4 flex justify-end">
+              <button
+                onClick={handleDownloadPDF}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#2D2D2D] text-white rounded-full text-[13px] font-semibold hover:bg-[#3a3a3a] transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.1)]"
+              >
+                <Download size={14} strokeWidth={2.2} />
+                Download as PDF
+              </button>
             </div>
           )}
 
@@ -402,22 +389,9 @@ export default function AssignmentDetailPage() {
         {/* Completed — Show Paper */}
         {currentAssignment.status === "completed" &&
           currentAssignment.generatedPaper && (
-            <>
-              {/* Action Bar */}
-              <div className="max-w-4xl mx-auto mb-4 flex justify-end gap-2 no-print">
-                <button
-                  onClick={handleRegenerate}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-full text-[12px] font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
-                >
-                  <RefreshCw size={13} strokeWidth={2.2} />
-                  Regenerate
-                </button>
-              </div>
-
-              <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-6 lg:p-12" ref={paperRef}>
-                <QuestionPaperView paper={currentAssignment.generatedPaper} />
-              </div>
-            </>
+            <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-6 lg:p-12" ref={paperRef}>
+              <QuestionPaperView paper={currentAssignment.generatedPaper} />
+            </div>
           )}
 
         {/* Draft State */}
