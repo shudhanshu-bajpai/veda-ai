@@ -351,20 +351,22 @@ export default function AssignmentDetailPage() {
         {/* Processing State */}
         {currentAssignment.status === "processing" && (
           <div className="max-w-4xl mx-auto">
-            <div className="card p-12 text-center">
-              <Loader2
-                size={48}
-                className="animate-spin text-gray-400 mx-auto mb-4"
-              />
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-10 lg:p-14 text-center">
+              <div className="relative inline-block mb-5">
+                <div className="w-16 h-16 bg-[#FAF5F0] rounded-full flex items-center justify-center">
+                  <Sparkles size={26} className="text-[#E8704F]" strokeWidth={1.8} />
+                </div>
+                <div className="absolute inset-0 w-16 h-16 rounded-full border-2 border-[#E8704F]/30 border-t-[#E8704F] animate-spin" />
+              </div>
+              <h2 className="text-[16px] font-bold text-gray-900 mb-2">
                 Generating Question Paper
               </h2>
-              <p className="text-sm text-gray-500 max-w-md mx-auto">
+              <p className="text-[13px] text-gray-500 max-w-md mx-auto leading-relaxed">
                 Our AI is crafting your question paper. This usually takes
                 15-30 seconds. The page will update automatically.
               </p>
-              <div className="mt-6 w-48 h-1.5 bg-gray-200 rounded-full mx-auto overflow-hidden">
-                <div className="h-full bg-gray-900 rounded-full animate-pulse w-2/3" />
+              <div className="mt-6 w-48 h-1 bg-gray-100 rounded-full mx-auto overflow-hidden">
+                <div className="h-full bg-[#2D2D2D] rounded-full animate-pulse w-2/3" />
               </div>
             </div>
           </div>
@@ -373,20 +375,24 @@ export default function AssignmentDetailPage() {
         {/* Failed State */}
         {currentAssignment.status === "failed" && (
           <div className="max-w-4xl mx-auto">
-            <div className="card p-12 text-center">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-10 lg:p-12 text-center">
               <AlertCircle
-                size={48}
+                size={44}
                 className="text-red-400 mx-auto mb-4"
+                strokeWidth={1.5}
               />
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              <h2 className="text-[16px] font-bold text-gray-900 mb-2">
                 Generation Failed
               </h2>
-              <p className="text-sm text-gray-500 max-w-md mx-auto mb-6">
+              <p className="text-[13px] text-gray-500 max-w-md mx-auto mb-6 leading-relaxed">
                 {currentAssignment.errorMessage ||
                   "Something went wrong while generating the question paper."}
               </p>
-              <button onClick={handleRegenerate} className="btn-primary">
-                <RefreshCw size={16} />
+              <button
+                onClick={handleRegenerate}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2D2D2D] text-white rounded-full text-[13px] font-semibold hover:bg-[#3a3a3a] transition-colors"
+              >
+                <RefreshCw size={14} strokeWidth={2.2} />
                 Try Again
               </button>
             </div>
@@ -398,18 +404,17 @@ export default function AssignmentDetailPage() {
           currentAssignment.generatedPaper && (
             <>
               {/* Action Bar */}
-              <div className="max-w-4xl mx-auto mb-4 flex justify-end gap-3 no-print">
-                <button onClick={handleRegenerate} className="btn-secondary text-xs">
-                  <RefreshCw size={14} />
+              <div className="max-w-4xl mx-auto mb-4 flex justify-end gap-2 no-print">
+                <button
+                  onClick={handleRegenerate}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-full text-[12px] font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+                >
+                  <RefreshCw size={13} strokeWidth={2.2} />
                   Regenerate
-                </button>
-                <button onClick={handleDownloadPDF} className="btn-primary text-xs">
-                  <Download size={14} />
-                  Download PDF
                 </button>
               </div>
 
-              <div className="max-w-4xl mx-auto bg-white rounded-xl border border-gray-100 shadow-[0_1px_4px_rgba(0,0,0,0.05)] p-6 lg:p-10" ref={paperRef}>
+              <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-6 lg:p-12" ref={paperRef}>
                 <QuestionPaperView paper={currentAssignment.generatedPaper} />
               </div>
             </>
@@ -418,8 +423,8 @@ export default function AssignmentDetailPage() {
         {/* Draft State */}
         {currentAssignment.status === "draft" && (
           <div className="max-w-4xl mx-auto">
-            <div className="card p-12 text-center">
-              <p className="text-sm text-gray-500">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-10 text-center">
+              <p className="text-[13px] text-gray-500">
                 This assignment is in draft state. It will start processing
                 shortly.
               </p>
@@ -431,9 +436,9 @@ export default function AssignmentDetailPage() {
         <div className="max-w-4xl mx-auto mt-6 no-print">
           <button
             onClick={() => router.push("/assignments")}
-            className="btn-secondary"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full text-[12px] font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={13} strokeWidth={2.2} />
             Back to Assignments
           </button>
         </div>

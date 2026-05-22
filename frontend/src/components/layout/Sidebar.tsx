@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   Users,
   ClipboardList,
+  FileText,
   Sparkles,
   BookOpen,
   Settings,
@@ -16,7 +17,7 @@ const navItems = [
   { label: "Home", href: "/", icon: LayoutGrid },
   { label: "My Groups", href: "/groups", icon: Users },
   { label: "Assignments", href: "/assignments", icon: ClipboardList, showBadge: true },
-  { label: "AI Teacher's Toolkit", href: "/toolkit", icon: Sparkles },
+  { label: "AI Teacher's Toolkit", href: "/toolkit", icon: FileText },
   { label: "My Library", href: "/library", icon: BookOpen },
 ];
 
@@ -29,15 +30,15 @@ export default function Sidebar() {
     /^\/assignments\/[^/]+$/.test(pathname) && pathname !== "/assignments/create";
 
   return (
-    <aside className="hidden lg:flex flex-col w-[230px] min-h-screen bg-white border-r border-gray-100 shrink-0 px-4 py-5">
+    <aside className="hidden lg:flex flex-col fixed left-4 top-4 bottom-4 w-[230px] bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-gray-100 px-4 py-5 z-30 overflow-y-auto">
       {/* VedaAI Logo */}
-      <div className="mb-5">
+      <div className="mb-6">
         <Link href="/" className="inline-block">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/vedaai-logo.jpg"
             alt="VedaAI"
-            className="h-10 w-auto object-contain"
+            className="h-14 w-auto object-contain"
           />
         </Link>
       </div>

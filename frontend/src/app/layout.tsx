@@ -25,10 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <body className={`${inter.className} antialiased`}>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="flex-1 min-h-screen pb-24 lg:pb-0 bg-[#F0F0F0]">{children}</main>
-        </div>
+        <Sidebar />
+        <main className="min-h-screen pb-24 lg:pb-0 bg-[#F0F0F0] lg:ml-[254px]">
+          {children}
+        </main>
         <BottomNav />
         <Toaster
           position="top-right"

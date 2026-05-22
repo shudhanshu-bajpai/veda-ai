@@ -41,16 +41,15 @@ export default function Header({
 
   return (
     <>
-      {/* Mobile Header — Always shows VedaAI top row */}
-      <header className="sticky top-0 z-40 bg-white lg:hidden">
-        {/* Top row: VedaAI + actions */}
-        <div className="flex items-center justify-between px-4 h-[52px] border-b border-gray-100">
+      {/* Mobile Header — floating panel (top row only) */}
+      <header className="sticky top-3 z-40 lg:hidden mx-3 mt-3 rounded-2xl bg-white shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-gray-100">
+        <div className="flex items-center justify-between px-4 h-[52px]">
           <Link href="/" className="inline-block">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/vedaai-logo.jpg"
               alt="VedaAI"
-              className="h-7 w-auto object-contain"
+              className="h-9 w-auto object-contain"
             />
           </Link>
 
@@ -70,26 +69,28 @@ export default function Header({
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Sub-header row: back arrow + centered title */}
-        {mobileBack && (
-          <div className="flex items-center px-4 h-[44px] border-b border-gray-100 relative">
+      {/* Mobile Sub-header — separate floating card */}
+      {mobileBack && (
+        <div className="lg:hidden mx-3 mt-3 rounded-2xl bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100">
+          <div className="flex items-center px-4 h-[48px] relative">
             <button
               onClick={() => router.back()}
-              className="p-1 hover:bg-gray-100 rounded-md transition-colors z-10"
+              className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors z-10"
             >
-              <ArrowLeft size={18} className="text-gray-600" />
+              <ArrowLeft size={16} className="text-gray-700" />
             </button>
             <span className="absolute left-1/2 -translate-x-1/2 text-[14px] font-semibold text-gray-900">
               {title}
             </span>
           </div>
-        )}
-      </header>
+        </div>
+      )}
 
-      {/* Desktop Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-gray-200 hidden lg:block">
-        <div className="flex items-center justify-between px-6 h-[52px]">
+      {/* Desktop Header — floating panel */}
+      <header className="sticky top-4 z-40 hidden lg:block mx-4 mt-4">
+        <div className="flex items-center justify-between px-5 h-[52px] bg-white rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.06)] border border-gray-100">
           <div className="flex items-center gap-3">
             {showBack && (
               <button
@@ -134,7 +135,7 @@ export default function Header({
               <img
                 src="/vedaai-logo.jpg"
                 alt="VedaAI"
-                className="h-9 w-auto object-contain"
+                className="h-12 w-auto object-contain"
               />
               <button onClick={() => setMobileMenuOpen(false)}>
                 <X size={20} className="text-gray-500" />

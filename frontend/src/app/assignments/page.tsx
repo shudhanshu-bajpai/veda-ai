@@ -9,8 +9,8 @@ import {
   SlidersHorizontal,
   MoreVertical,
   Plus,
-  ClipboardList,
 } from "lucide-react";
+import EmptyAssignments from "@/components/illustrations/EmptyAssignments";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 
@@ -62,28 +62,21 @@ export default function AssignmentsPage() {
       <div className="flex-1 p-4 lg:px-8 lg:py-6 relative">
         {assignments.length === 0 ? (
           /* ---- Empty State ---- */
-          <div className="flex-1 flex flex-col items-center justify-center py-20">
-            <div className="relative mb-6">
-              <div className="w-40 h-40 bg-gray-100 rounded-full flex items-center justify-center">
-                <ClipboardList size={52} className="text-gray-300" />
-              </div>
-              <div className="absolute bottom-0 right-2 w-14 h-14 bg-red-50 rounded-full flex items-center justify-center border-4 border-white">
-                <span className="text-red-500 text-2xl font-bold">&times;</span>
-              </div>
-            </div>
+          <div className="flex-1 flex flex-col items-center justify-center py-12 lg:py-20">
+            <EmptyAssignments className="w-48 h-48 lg:w-56 lg:h-56 mb-6" />
             <h2 className="text-[20px] font-bold text-gray-900 mb-2">
               No assignments yet
             </h2>
-            <p className="text-[13px] text-gray-500 text-center max-w-sm mb-8 leading-relaxed px-4">
+            <p className="text-[13px] text-gray-500 text-center max-w-[360px] mb-8 leading-relaxed px-4">
               Create your first assignment to start collecting and grading
               student submissions. You can set up rubrics, define marking
               criteria, and let AI assist with grading.
             </p>
             <Link
               href="/assignments/create"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-[#2D2D2D] text-white rounded-lg text-[13px] font-semibold hover:bg-[#3a3a3a] transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#2D2D2D] text-white rounded-full text-[13px] font-semibold hover:bg-[#3a3a3a] transition-colors"
             >
-              <Plus size={16} />
+              <Plus size={15} strokeWidth={2.5} />
               Create Your First Assignment
             </Link>
           </div>
@@ -102,12 +95,11 @@ export default function AssignmentsPage() {
               </p>
             </div>
 
-            {/* ---- Filter + Search row ---- */}
-            <div className="flex items-center justify-between gap-3 mb-5">
+            {/* ---- Filter + Search row (desktop) ---- */}
+            <div className="hidden lg:flex items-center justify-between gap-3 mb-5">
               <button className="flex items-center gap-1.5 px-1 py-2 text-[13px] text-gray-600 font-medium shrink-0 hover:text-gray-900 transition-colors">
                 <SlidersHorizontal size={14} />
-                <span className="hidden lg:inline">Filter By</span>
-                <span className="lg:hidden">Filter</span>
+                Filter By
               </button>
               <div className="relative w-full max-w-[300px]">
                 <Search
@@ -119,14 +111,29 @@ export default function AssignmentsPage() {
                   placeholder="Search Assignment"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-full text-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all hidden lg:block"
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-full text-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* ---- Filter + Search card (mobile) ---- */}
+            <div className="lg:hidden bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100 p-3 mb-3 flex items-center gap-2">
+              <button className="flex items-center gap-1.5 px-2 py-1.5 text-[12px] text-gray-600 font-medium shrink-0">
+                <SlidersHorizontal size={13} />
+                Filter
+              </button>
+              <div className="h-5 w-px bg-gray-200" />
+              <div className="relative flex-1">
+                <Search
+                  size={14}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                 />
                 <input
                   type="text"
                   placeholder="Search Name"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-full text-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all lg:hidden"
+                  className="w-full pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-100 rounded-full text-[12px] placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300 transition-all"
                 />
               </div>
             </div>
@@ -211,7 +218,7 @@ export default function AssignmentsPage() {
                     <div className="flex items-start justify-between mb-5">
                       <Link
                         href={`/assignments/${assignment._id}`}
-                        className="text-[15px] font-bold text-gray-900 flex-1 pr-2 hover:text-gray-700"
+                        className="text-[16px] font-bold text-gray-900 flex-1 pr-2 hover:text-gray-700"
                       >
                         {assignment.title}
                       </Link>

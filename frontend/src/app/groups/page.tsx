@@ -1,13 +1,17 @@
 "use client";
 import Header from "@/components/layout/Header";
+import ComingSoon from "@/components/ComingSoon";
+import { Users } from "lucide-react";
 
 export default function GroupsPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header title="My Groups" showBack />
-      <div className="flex-1 flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Groups — Coming soon</p>
-      </div>
+      <ComingSoon
+        icon={Users}
+        title="My Groups"
+        description="Organize your students into groups, manage rosters, and assign work to specific classes. We're putting the final touches on this."
+      />
     </div>
   );
 }
